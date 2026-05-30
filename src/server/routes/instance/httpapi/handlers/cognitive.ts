@@ -5,6 +5,7 @@ import { InstanceHttpApi } from "../api"
 import { CognitiveDeviceService } from "./cognitive/device"
 import { CognitiveGoalService } from "./cognitive/goal"
 import { CognitiveAgentService } from "./cognitive/agent"
+import { CognitiveLLMService } from "@/cognitive/llm/llm"
 
 export const deviceHandlers = HttpApiBuilder.group(InstanceHttpApi, "device", (handlers) =>
   Effect.gen(function* () {
@@ -52,5 +53,14 @@ export const agentHandlers = HttpApiBuilder.group(InstanceHttpApi, "agent", (han
     return handlers
       .handle("list", () => agentSvc.list())
       .handle("profile", (ctx) => agentSvc.getProfile(ctx.params.role))
+  }),
+)
+
+export const llmHandlers = HttpApiBuilder.group(InstanceHttpApi, "llm", (handlers) =>
+  Effect.gen(function* () {
+    const llmSvc = yield* CognitiveLLMService
+
+    return handlers
+      .handle("generate", (ctx) => llmSvc.generate(ctx.payload))
   }),
 )

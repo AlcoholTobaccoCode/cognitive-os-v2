@@ -307,6 +307,29 @@ export const CognitiveApi = HttpApi.make("cognitive")
       .middleware(InstanceContextMiddleware)
       .middleware(Authorization),
   )
+  .add(
+    HttpApiGroup.make("llm")
+      .add(
+        HttpApiEndpoint.post("generate", "/llm/generate", {
+          payload: Schema.Struct({
+            prompt: Schema.String,
+            system: Schema.optional(Schema.String),
+            model: Schema.optional(Schema.String),
+            provider: Schema.optional(Schema.String),
+          }),
+          success: Schema.Struct({
+            text: Schema.String,
+            usage: Schema.optional(Schema.Struct({
+              input: Schema.Number,
+              output: Schema.Number,
+            })),
+          }),
+        }).annotateMerge(OpenApi.annotations({ identifier: "llm.generate", summary: "Generate LLM response" })),
+      )
+      .annotateMerge(OpenApi.annotations({ title: "llm", description: "LLM integration" }))
+      .middleware(InstanceContextMiddleware)
+      .middleware(Authorization),
+  )
   .annotateMerge(
     OpenApi.annotations({
       title: "Cognitive OS API",
